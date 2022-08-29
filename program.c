@@ -64,7 +64,7 @@ void* agent(void* arg){
             ima_sibica = 1;
             ima_duvana = 1;
             puts("Agent uzima duvan i sibice");
-            pthread_cond_signal(&papir);
+            pthread_cond_signal(&duvan);
             pthread_cond_signal(&sibice);
         }
         else if ( randNum == 2 ) {
@@ -78,13 +78,14 @@ void* agent(void* arg){
         
         pthread_mutex_unlock(&mutex);
     }
+
     return 0;
 }
 
 void* pusher_papir(void* arg){
-    
     while(1){
         pthread_mutex_lock(&mutex);
+
         while(ima_papira == 0)
             pthread_cond_wait(&papir, &mutex);
     
@@ -109,9 +110,9 @@ void* pusher_papir(void* arg){
 }
 
 void* pusher_sibice(void* arg){
-    
     while(1) {
         pthread_mutex_lock(&mutex);
+        
         while(ima_sibica == 0)
             pthread_cond_wait(&sibice, &mutex);
     
@@ -149,7 +150,7 @@ void* pusher_duvan(void* arg){
             pthread_cond_signal(&pusac_sa_papirom_cond);
         }
         if(ima_papira == 1) {
-            ima_duvana = 0;
+            ima_papira = 0;
             agent_radi = 0;
             pusac_sa_sibicama_radi = 1;
             puts("Pozovi pusaca sa sibicama");
@@ -161,12 +162,12 @@ void* pusher_duvan(void* arg){
 }
 
 void* pusac_duvan(void* arg){
-    
     while(1){
-        
         pthread_mutex_lock(&pusac);
+
         while(pusac_sa_duvanom_radi == 0)
             pthread_cond_wait(&pusac_sa_duvanom_cond, &pusac);
+
         ima_papira = 0;
         ima_sibica = 0;
         pusac_sa_duvanom_radi = 0;
@@ -183,6 +184,7 @@ void* pusac_duvan(void* arg){
 void* pusac_papir(void* arg){
     while(1){
         pthread_mutex_lock(&pusac);
+
         while(pusac_sa_papirom_radi == 0)
             pthread_cond_wait(&pusac_sa_papirom_cond, &pusac);
 
@@ -202,13 +204,15 @@ void* pusac_papir(void* arg){
 void* pusac_sibice(void* arg){
     while(1){
         pthread_mutex_lock(&pusac);
+
         while(pusac_sa_sibicama_radi == 0)
             pthread_cond_wait(&pusac_sa_sibicama_cond, &pusac);
+
         ima_papira = 0;
         ima_duvana = 0;
         pusac_sa_sibicama_radi = 0;
         agent_radi = 1;
-         puts("Pusac sa sibicama: pravi cigarete...");
+        puts("Pusac sa sibicama: pravi cigarete...");
         pthread_mutex_unlock(&pusac);
         
         puts("Pusac sa sibicama: Pusi...");
@@ -218,8 +222,7 @@ void* pusac_sibice(void* arg){
 }
 
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     //Definisanje threadova
     pthread_t agent_t, pusac_sa_duvanom_t, pusac_sa_papirom_t, pusac_sa_sibicama_t, pusher_duvan_t, pusher_papir_t, pusher_sibice_t;
     
