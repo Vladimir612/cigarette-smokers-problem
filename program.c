@@ -6,7 +6,6 @@
 
 //Deklaracija i inicijalizacija mutexa i kondicionala
 pthread_mutex_t mutex =	PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t pusac = PTHREAD_MUTEX_INITIALIZER;
 
 //ucesnici
 pthread_cond_t agent_cond = PTHREAD_COND_INITIALIZER;
@@ -163,17 +162,17 @@ void* pusher_duvan(void* arg){
 
 void* pusac_duvan(void* arg){
     while(1){
-        pthread_mutex_lock(&pusac);
+        pthread_mutex_lock(&mutex);
 
         while(pusac_sa_duvanom_radi == 0)
-            pthread_cond_wait(&pusac_sa_duvanom_cond, &pusac);
+            pthread_cond_wait(&pusac_sa_duvanom_cond, &mutex);
 
         ima_papira = 0;
         ima_sibica = 0;
         pusac_sa_duvanom_radi = 0;
         agent_radi = 1;
         puts("Pusac sa duvanom: pravi cigarete...");
-        pthread_mutex_unlock(&pusac);
+        pthread_mutex_unlock(&mutex);
         
         puts("Pusac sa duvanom: Pusi...");
     }
@@ -183,17 +182,17 @@ void* pusac_duvan(void* arg){
 
 void* pusac_papir(void* arg){
     while(1){
-        pthread_mutex_lock(&pusac);
+        pthread_mutex_lock(&mutex);
 
         while(pusac_sa_papirom_radi == 0)
-            pthread_cond_wait(&pusac_sa_papirom_cond, &pusac);
+            pthread_cond_wait(&pusac_sa_papirom_cond, &mutex);
 
         ima_duvana = 0;
         ima_sibica = 0;
         pusac_sa_papirom_radi = 0;
         agent_radi = 1;
         puts("Pusac sa papirom: pravi cigarete...");
-        pthread_mutex_unlock(&pusac);
+        pthread_mutex_unlock(&mutex);
         
         puts("Pusac sa papirom: Pusi...");
     }
@@ -203,17 +202,17 @@ void* pusac_papir(void* arg){
 
 void* pusac_sibice(void* arg){
     while(1){
-        pthread_mutex_lock(&pusac);
+        pthread_mutex_lock(&mutex);
 
         while(pusac_sa_sibicama_radi == 0)
-            pthread_cond_wait(&pusac_sa_sibicama_cond, &pusac);
+            pthread_cond_wait(&pusac_sa_sibicama_cond, &mutex);
 
         ima_papira = 0;
         ima_duvana = 0;
         pusac_sa_sibicama_radi = 0;
         agent_radi = 1;
         puts("Pusac sa sibicama: pravi cigarete...");
-        pthread_mutex_unlock(&pusac);
+        pthread_mutex_unlock(&mutex);
         
         puts("Pusac sa sibicama: Pusi...");
     }
